@@ -13,8 +13,8 @@ namespace CellTower
             this.id = id;
             this.easting = easting;
             this.northing = northing;
-            this.longitude = longitude;
-            this.latitude = latitude;
+            this.longitude = longitude;  // negative values refer to the west, positive values refer to the east
+            this.latitude = latitude;    // negative values refer to the south, positive values refer to the north
         }
 
         // GETTERS
