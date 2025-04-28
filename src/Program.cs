@@ -11,30 +11,62 @@ namespace CLICellFreqAllocator
         const string InputFile = DataDirectory + "CellTowerList.txt";
         const string JsonOutputFile = DataDirectory + "distanceBetweenCellTowers.json";
         private static readonly List<int> Frequencies = new List<int> { 110, 111, 112, 113, 114, 115 };
+        const int DefaultFrequency = -1;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("STARTING CELL TOWER FREQUENCY ALLOCATION");
+            try
+            {
+                Console.WriteLine(new string('=', 100));
+                Console.WriteLine(new string(' ', 25) + "Cell Frequency Allocator" + new string(' ', 25));
+                Console.WriteLine(new string('-', 100));
+                Console.WriteLine("Select an option below:");
+                Console.WriteLine("1) Run the program and allocate frequencies.");
+                Console.WriteLine("2) Terminate the program.\n");
 
-            List<CellTower.CellTower> cellTowers = new List<CellTower.CellTower>();
-            cellTowers = ReadCellTowersData(InputFile);
+                string? userInput = Console.ReadLine();
 
-            Dictionary<string, Dictionary<string, double>> distanceBetweenCellTowers = GenerateJsonFile(cellTowers);
+                if (userInput != null && (userInput == "1" || userInput == "2"))
+                {
+                    if (userInput == "1")
+                    {
+                        Console.WriteLine("Running program...\n");
 
-            IdentifyCloseAndFarTowers(cellTowers, distanceBetweenCellTowers);
+                        List<CellTower.CellTower> cellTowers = new List<CellTower.CellTower>();
+                        cellTowers = ReadCellTowersData(InputFile);
 
-            // print the close and far towers of each cell tower
-            // foreach (CellTower.CellTower cellTower in cellTowers)
-            // {
-            //     Console.WriteLine("Close towers of " + cellTower.getID() + ": " + string.Join(", ", cellTower.getCloseTowers().Select(tower => tower.getID())));
-            //     Console.WriteLine("Far towers of " + cellTower.getID() + ": " + string.Join(", ", cellTower.getFarTowers().Select(tower => tower.getID())));
-            //     Console.WriteLine();
-            // }
+                        Dictionary<string, Dictionary<string, double>> distanceBetweenCellTowers = GenerateJsonFile(cellTowers);
 
-            AllocateFrequencies(cellTowers, distanceBetweenCellTowers);
+                        IdentifyCloseAndFarTowers(cellTowers, distanceBetweenCellTowers);
+
+                        Dictionary<string, List<string>> cellTowerFrequencies = AllocateFrequencies(cellTowers, distanceBetweenCellTowers);
+
+                        DisplayAllocatedFrequencies(cellTowerFrequencies);
+
+                        Console.WriteLine("\nProgram Terminated.");
+                        Console.WriteLine(new string('=', 100));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Program terminated.");
+                        Console.WriteLine(new string('=', 100));
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Program terminated due to no input or invalid inputs. Ensure that you enter either '1' or '2'.");
+                    Console.WriteLine(new string('=', 100));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception in Program.cs -> Main(): " + e.Message);
+            }
         }
 
-        public static void AllocateFrequencies(List<CellTower.CellTower> cellTowers, Dictionary<string, Dictionary<string, double>> distanceBetweenCellTowers)
+        // ---- HELPER METHODS ---
+
+        public static Dictionary<string, List<string>> AllocateFrequencies(List<CellTower.CellTower> cellTowers, Dictionary<string, Dictionary<string, double>> distanceBetweenCellTowers)
         {
             // TODO
             // Go through all the cell towers and allocate frequencies to them.
@@ -50,48 +82,109 @@ namespace CLICellFreqAllocator
             try
             {
                 cellTowers[0].setFrequency(Frequencies[0]);
+                cellTowers[0].setCannotAssignFrequency(true);
 
                 foreach (CellTower.CellTower cellTower in cellTowers)
                 {
                     Dictionary<string, double> distances = distanceBetweenCellTowers[cellTower.getID()];
                     CellTower.CellTower? furthestCellTower = GetFurthestCellTower(cellTower, distances);
-                    List<int> availableFrequencies = GetAvailableFrequenciesForCloseTowers(cellTower.getFrequency());
+                    List<int> availableFrequencies = GetAvailableFrequenciesForCloseTowers(cellTower.getFrequency(), cellTower.getCloseTowers());
 
                     if (furthestCellTower != null)
                     {
-                        furthestCellTower.setFrequency(cellTower.getFrequency());
+                        cellTower.setFurthestTower(furthestCellTower);
+                        List<int> closeTowerFrequencies = cellTower.getCloseTowers().Select(tower => tower.getFrequency()).ToList();
+
+                        if (furthestCellTower.getCannotAssignFrequency() == true)
+                        {
+                            // if none of the current tower's close towers have the same frequency as the furthest tower
+                            if (!closeTowerFrequencies.Contains(furthestCellTower.getFrequency()))
+                            {
+                                cellTower.setFrequency(furthestCellTower.getFrequency());
+                                cellTower.setCannotAssignFrequency(true);
+                            }
+                            else
+                            {
+                                // Uncomment the line below to see which cell towers have the same tower as their furthest tower
+                                // CellTower.CellTower? closeCellTowerWithSameFurthestTower = null;
+
+                                // foreach (CellTower.CellTower closeTower in cellTower.getCloseTowers())
+                                // {
+                                //     CellTower.CellTower? furthestTowerForCloseTower = closeTower.getFurthestTower();
+                                //     if (furthestTowerForCloseTower != null && furthestTowerForCloseTower.getID() == furthestCellTower.getID())
+                                //     {
+                                //         closeCellTowerWithSameFurthestTower = closeTower;
+                                //         break;
+                                //     }
+                                // }
+
+                                // if (closeCellTowerWithSameFurthestTower != null)
+                                // {
+                                //     Console.WriteLine($"" +
+                                //         $"Cell tower {cellTower.getID()} and Cell Tower {closeCellTowerWithSameFurthestTower.getID()}, " +
+                                //         $"which are close towers, share Cell Tower {furthestCellTower.getID()} as their furthest tower. " +
+                                //         $"Keeping the current frequency for Cell Tower {cellTower.getID()}"
+                                //     );
+                                // }
+                            }
+                        }
+                        else
+                        {
+                            furthestCellTower.setFrequency(cellTower.getFrequency());
+                            furthestCellTower.setCannotAssignFrequency(true);
+                        }
                     }
                     else
                     {
-                        throw new Exception("Exception in Program.cs -> AllocateFrequencies() -> foreach()");
+                        throw new Exception("foreach() -> Received null value when getting the furthest cell tower.");
                     }
 
-                    if (availableFrequencies.Count == 0)
+                    if (availableFrequencies.Count > 0 && TowerHasNoAssignedFrequency(cellTower))
                     {
-                        throw new Exception("Exception in Program.cs -> AllocateFrequencies() -> foreach() -> No available frequencies");
-                    }
-
-                    if (TowerHasNoAssignedFrequency(cellTower))
-                    {
+                        // throw new Exception("foreach() -> No available frequencies");
                         cellTower.setFrequency(availableFrequencies[0]);
                     }
 
                     // close towers
                     foreach (CellTower.CellTower closeTower in cellTower.getCloseTowers())
                     {
-                        // handle endless loop that occurs
-                        if (TowerHasNoAssignedFrequency(closeTower) || closeTower.getFrequency() == cellTower.getFrequency())
+                        List<int> availableCloseFrequencies = GetAvailableFrequenciesForCloseTowers(closeTower.getFrequency(), closeTower.getCloseTowers());
+
+                        // if the current tower has the same frequency as its close tower
+                        if (closeTower.getFrequency() == cellTower.getFrequency() && closeTower.getFrequency() != DefaultFrequency)
                         {
-                            // if the close cell tower has no frequency assigned, assign it a frequency OR 
-                            // if the close tower has the same frequency as the current cell tower, change the current tower's frequency
-                            closeTower.setFrequency(availableFrequencies[0]);
+                            // if there are available frequencies for this close tower
+                            if (availableCloseFrequencies.Count > 0)
+                            {
+                                closeTower.setFrequency(availableCloseFrequencies[0]);
+                            }
+                            // else there are no available frequencies for this close tower, so we assign it the default value again
+                            else
+                            {
+                                closeTower.setFrequency(DefaultFrequency);
+                                closeTower.setCannotAssignFrequency(true);
+                            }
+                        }
+                        else
+                        {
+                            if (availableCloseFrequencies.Count > 0 && TowerHasNoAssignedFrequency(closeTower))
+                            {
+                                closeTower.setFrequency(availableCloseFrequencies[0]);
+                            }
                         }
                     }
 
                     // far towers
                     foreach (CellTower.CellTower farTower in cellTower.getFarTowers())
                     {
-                        farTower.setFrequency(cellTower.getFrequency());
+                        if (farTower.getFrequency() == DefaultFrequency && farTower.getCannotAssignFrequency() == false)
+                        {
+                            farTower.setFrequency(cellTower.getFrequency());
+                        }
+                    }
+                    if (cellTowers[0].getFrequency() == 111)
+                    {
+                        Console.WriteLine();
                     }
                 }
 
@@ -103,12 +196,14 @@ namespace CLICellFreqAllocator
                 File.WriteAllText(DataDirectory + "frequencyList.json", json);
 
                 Console.WriteLine("JSON cell tower frequency list output file created.");
+
+                return cellTowerFrequencies;
             }
             catch (Exception e)
             {
                 Console.WriteLine("Exception in Program.cs -> AllocateFrequencies(): " + e.Message);
             }
-
+            return cellTowerFrequencies;
         }
 
         public static void BuildFrequencyJsonObject(Dictionary<string, List<string>> cellTowerFrequencies, List<CellTower.CellTower> cellTowers)
@@ -120,9 +215,15 @@ namespace CLICellFreqAllocator
                     cellTowerFrequencies.Add(frequency.ToString(), new List<string>());
                 }
 
+                cellTowerFrequencies.Add("-1", new List<string>()); // for the cell towers with unassigned frequencies
+
                 foreach (CellTower.CellTower cellTower in cellTowers)
                 {
-                    _ = cellTowerFrequencies.Where(freq => freq.Key == cellTower.getFrequency().ToString()).First().Value.Append(cellTower.getID());
+                    if (cellTower.getID() == "M")
+                    {
+                        Console.WriteLine();
+                    }
+                    cellTowerFrequencies.Where(freq => freq.Key == cellTower.getFrequency().ToString()).First().Value.Add(cellTower.getID());
                 }
             }
             catch (Exception e)
@@ -131,11 +232,13 @@ namespace CLICellFreqAllocator
             }
         }
 
-        public static List<int> GetAvailableFrequenciesForCloseTowers(int currentTowerFrequency)
+        public static List<int> GetAvailableFrequenciesForCloseTowers(int currentTowerFrequency, List<CellTower.CellTower> otherCloseTowers)
         {
             try
             {
-                return Frequencies.Where(freq => freq != currentTowerFrequency).ToList();
+                List<int> closeTowersFrequencies = otherCloseTowers.Select(tower => tower.getFrequency()).ToList();
+
+                return Frequencies.Where(freq => !closeTowersFrequencies.Contains(freq) && freq != currentTowerFrequency).ToList();
             }
             catch (Exception e)
             {
@@ -312,6 +415,41 @@ namespace CLICellFreqAllocator
             }
 
             return cellTowers;
+        }
+
+        public static void PrintCellTowersData(List<CellTower.CellTower> cellTowers)
+        {
+            // print the close and far towers of each cell tower
+            Console.WriteLine();
+            foreach (CellTower.CellTower cellTower in cellTowers)
+            {
+                Console.WriteLine("Close towers of " + cellTower.getID() + ": " + string.Join(", ", cellTower.getCloseTowers().Select(tower => tower.getID())));
+                Console.WriteLine("Far towers of " + cellTower.getID() + ": " + string.Join(", ", cellTower.getFarTowers().Select(tower => tower.getID())));
+                Console.WriteLine();
+            }
+        }
+        public static void DisplayAllocatedFrequencies(Dictionary<string, List<string>> cellTowerFrequencies)
+        {
+            try
+            {
+                Console.WriteLine('|' + new string('-', 64) + '|');
+                Console.WriteLine('|' + new string(' ', 5) + "Frequency" + new string(' ', 5) + '|' + new string(' ', 5) + "Cell Tower IDs" + new string(' ', 5) + '|');
+
+                foreach (string key in cellTowerFrequencies.Keys)
+                {
+                    string cellIDs = string.Join(", ", cellTowerFrequencies[key]);
+                    string frequencyColumnFormat = key.PadLeft(5).PadRight(5);
+                    string cellIDsColumnFormat = cellIDs.PadLeft(5).PadRight(5);
+
+                    Console.WriteLine('|' + frequencyColumnFormat + '|' + cellIDsColumnFormat + '|');
+                }
+
+                Console.WriteLine('|' + new string('-', 64) + '|');
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception in Program.cs -> DisplayAllocatedFrequencies(): " + e.Message);
+            }
         }
     }
 }
