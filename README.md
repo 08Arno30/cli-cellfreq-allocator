@@ -20,3 +20,19 @@ Since the program will first allocate a frequency to both Cell Tower X and Cell 
 2. Following this, the program reads the JSON data to determine which towers are close or far from each tower.
 3. Towers that are close to one another cannot have the same frequency. Towers that are the furthest away from each other can have the same frequency.
 4. If there are any cell towers that cannot be assigned a frequency, then it maintains a default frequency(user-defined as -1).
+
+## Prerequisites
+- .NET SDK [Download here](https://dotnet.microsoft.com/en-us/download)
+- C# Compiler (comes with .NET SDK)
+- IDE (e.g. Visual Studio Code with C# extension)
+    - Visual Studio Code [Download here](https://code.visualstudio.com/download)
+    - Visual Studio Community [Download here](https://visualstudio.microsoft.com/vs/community/)
+
+## How to use
+
+1. Clone the repository
+2. Open the project in an IDE (e.g. Visual Studio Code)
+3. Open a terminal (should be inside the root directory of the project if opened with VSCode)
+4. Change directory to source folder -> `cd src`
+5. Build and compile the project -> `dotnet build`
+6. Run the program and follow prompts -> `dotnet run`
