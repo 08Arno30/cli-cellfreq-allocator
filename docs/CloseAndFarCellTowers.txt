@@ -1,0 +1,58 @@
+This is output of cell tower data for minimum distance of 0.5 (copied from terminal)
+
+Close towers of A: B, C
+Far towers of A: D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S
+
+Close towers of B: A, C, J
+Far towers of B: D, E, F, G, H, I, K, L, M, N, O, P, Q, R, S
+
+Close towers of C: A, B, I, J
+Far towers of C: D, E, F, G, H, K, L, M, N, O, P, Q, R, S
+
+Close towers of D: E, F, G, H, K, L, M
+Far towers of D: A, B, C, I, J, N, O, P, Q, R, S
+
+Close towers of E: D, F, G, H, K, L, M
+Far towers of E: A, B, C, I, J, N, O, P, Q, R, S
+
+Close towers of F: D, E, G, H, K, L
+Far towers of F: A, B, C, I, J, M, N, O, P, Q, R, S
+
+Close towers of G: D, E, F, H, K, L
+Far towers of G: A, B, C, I, J, M, N, O, P, Q, R, S
+
+Close towers of H: D, E, F, G, K, L, M
+Far towers of H: A, B, C, I, J, N, O, P, Q, R, S
+
+Close towers of I: C
+Far towers of I: A, B, D, E, F, G, H, J, K, L, M, N, O, P, Q, R, S
+
+Close towers of J: B, C, M, N, O
+Far towers of J: A, D, E, F, G, H, I, K, L, P, Q, R, S
+
+Close towers of K: D, E, F, G, H, L, M
+Far towers of K: A, B, C, I, J, N, O, P, Q, R, S
+
+Close towers of L: D, E, F, G, H, K, M
+Far towers of L: A, B, C, I, J, N, O, P, Q, R, S
+
+Close towers of M: D, E, H, J, K, L, N, P, Q
+Far towers of M: A, B, C, F, G, I, O, R, S
+
+Close towers of N: J, M, O, Q, R, S
+Far towers of N: A, B, C, D, E, F, G, H, I, K, L, P
+
+Close towers of O: J, N, Q, R, S
+Far towers of O: A, B, C, D, E, F, G, H, I, K, L, M, P
+
+Close towers of P: M, Q, R, S
+Far towers of P: A, B, C, D, E, F, G, H, I, J, K, L, N, O
+
+Close towers of Q: M, N, O, P, R, S
+Far towers of Q: A, B, C, D, E, F, G, H, I, J, K, L
+
+Close towers of R: N, O, P, Q, S
+Far towers of R: A, B, C, D, E, F, G, H, I, J, K, L, M
+
+Close towers of S: N, O, P, Q, R
+Far towers of S: A, B, C, D, E, F, G, H, I, J, K, L, M
