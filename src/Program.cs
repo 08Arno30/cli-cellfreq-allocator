@@ -68,13 +68,6 @@ namespace CLICellFreqAllocator
 
         public static Dictionary<string, List<string>> AllocateFrequencies(List<CellTower.CellTower> cellTowers, Dictionary<string, Dictionary<string, double>> distanceBetweenCellTowers)
         {
-            // TODO
-            // Go through all the cell towers and allocate frequencies to them.
-            // Start by the first cell tower and assign it a frequency. The farthest tower will get the same frequency.
-            // Go through a cell tower's close towers and assign it a different frequency. For each close tower, loop through its close towers.
-            // -- If it has a close tower that is also in the outer loop's tower's close towers, assign it a different frequency.
-            // -- If it has a close tower that is not in the outer loop's tower's close towers, but it is in the outer loop's far towers, assign it the same frequency as the outer loop's tower.
-
             Console.WriteLine("Allocating frequencies...");
 
             Dictionary<string, List<string>> cellTowerFrequencies = new Dictionary<string, List<string>>();
@@ -355,7 +348,6 @@ namespace CLICellFreqAllocator
         public static double CalculateDistance(double latitude_1, double longitude_1, double latitude_2, double longitude_2)
         {
             // Using the Haversine formula approach
-
             double R = 6371; // earth's radius (km)
 
             // Convert values to radians
@@ -419,7 +411,6 @@ namespace CLICellFreqAllocator
 
         public static void PrintCellTowersData(List<CellTower.CellTower> cellTowers)
         {
-            // print the close and far towers of each cell tower
             Console.WriteLine();
             foreach (CellTower.CellTower cellTower in cellTowers)
             {
@@ -432,19 +423,20 @@ namespace CLICellFreqAllocator
         {
             try
             {
-                Console.WriteLine('|' + new string('-', 64) + '|');
-                Console.WriteLine('|' + new string(' ', 5) + "Frequency" + new string(' ', 5) + '|' + new string(' ', 5) + "Cell Tower IDs" + new string(' ', 5) + '|');
+                Console.WriteLine('|' + new string('-', 44) + '|');
+                Console.WriteLine('|' + new string(' ', 5) + "Frequency" + new string(' ', 6) + '|' + new string(' ', 5) + "Cell Tower IDs" + new string(' ', 4) + '|');
+                Console.WriteLine('|' + new string('-', 44) + '|');
 
                 foreach (string key in cellTowerFrequencies.Keys)
                 {
                     string cellIDs = string.Join(", ", cellTowerFrequencies[key]);
-                    string frequencyColumnFormat = key.PadLeft(5).PadRight(5);
-                    string cellIDsColumnFormat = cellIDs.PadLeft(5).PadRight(5);
+                    string frequencyColumnFormat = key.PadLeft(10).PadRight(20);
+                    string cellIDsColumnFormat = cellIDs.PadLeft(20).PadRight(23);
 
                     Console.WriteLine('|' + frequencyColumnFormat + '|' + cellIDsColumnFormat + '|');
                 }
 
-                Console.WriteLine('|' + new string('-', 64) + '|');
+                Console.WriteLine('|' + new string('-', 44) + '|');
             }
             catch (Exception e)
             {
